@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.spt-mod-manifest.example/manifest.json",
+  "title": "SPT Mod Manifest",
+  "description": "Mod manifest proposal for SPT (Single-Player Tarkov). SPT defines the structure of server-side mods, while BepInEx defines the structure of client-side mods. This manifest schema provides a standardized format to describe mod metadata and dependencies, enabling mod managers to properly manage mod installations.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "author",
+    "version",
+    "sptVersion"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "A unique identifier to distinguish the mod from other mods.",
+      "examples": [
+        "com.example.my-mod"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the mod. This is the name that will be displayed to the user.",
+      "examples": [
+        "My Mod"
+      ]
+    },
+    "author": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "The author of the mod.",
+          "examples": [
+            "John Doe"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The authors of the mod. For multiple authors, use an array of strings.",
+          "examples": [
+            [
+              "John Doe",
+              "Jane Doe"
+            ]
+          ]
+        }
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description of the mod. For detailed documentation, use the documentation field.",
+      "examples": [
+        "A mod that enhances gameplay mechanics."
+      ]
+    },
+    "version": {
+      "type": "string",
+      "description": "The version of the mod. Should be a semantic version.",
+      "examples": [
+        "1.0.0"
+      ]
+    },
+    "sptVersion": {
+      "type": "string",
+      "description": "Version range of SPT that this mod is compatible with.",
+      "examples": [
+        "^4.0.0"
+      ]
+    },
+    "icon": {
+      "type": "string",
+      "description": "The icon of the mod. Should be a relative path to the manifest file.",
+      "examples": [
+        "icon.png"
+      ]
+    },
+    "documentation": {
+      "type": "string",
+      "description": "The documentation of the mod. Should be a relative path to the manifest file.",
+      "examples": [
+        "documentation.md"
+      ]
+    },
+    "compatibility": {
+      "$ref": "#/definitions/Compatibility"
+    },
+    "dependencies": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A record of mod ids and version ranges.",
+          "examples": [
+            {
+              "com.example.my-mod": "^1.0.0",
+              "com.example.my-mod-2": "^2.0.0"
+            }
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Dependency"
+          },
+          "description": "A list of dependencies with optional flags.",
+          "examples": [
+            [
+              {
+                "id": "com.example.my-mod",
+                "version": "^1.0.0",
+                "optional": true
+              },
+              {
+                "id": "com.example.my-mod-2",
+                "version": "^2.0.0"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Effect"
+      },
+      "description": "Effects this mod has on profile data. If a mod adds new traders, items, or other persistent data, profiles saved with the mod enabled will contain that data. When the mod is disabled, the SPT server may be unable to load profiles containing references to the mod's data, potentially causing profile corruption. Use this field to indicate that the mod permanently modifies profile data, which may cause profiles to become incompatible if the mod is removed.",
+      "examples": [
+        [
+          "trader",
+          "item"
+        ]
+      ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Link"
+      },
+      "description": "Links to display along with the mod. You can use LinkType to mark the type of the link.",
+      "examples": [
+        [
+          {
+            "type": "code",
+            "url": "https://github.com/example/my-mod"
+          },
+          {
+            "url": "https://example.com/documentation"
+          }
+        ]
+      ]
+    }
+  },
+  "definitions": {
+    "Dependency": {
+      "type": "object",
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "A unique identifier to distinguish the mod from other mods.",
+          "examples": [
+            "com.example.my-mod"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "A version range.",
+          "examples": [
+            "^1.0.0"
+          ]
+        },
+        "optional": {
+          "type": "boolean",
+          "description": "Whether this dependency is optional."
+        }
+      },
+      "examples": [
+        {
+          "id": "com.example.my-mod",
+          "version": "^1.0.0",
+          "optional": true
+        }
+      ]
+    },
+    "Compatibility": {
+      "type": "object",
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of mod IDs that this mod is compatible with.",
+          "examples": [
+            [
+              "com.my.tom"
+            ]
+          ]
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of mod IDs that this mod is incompatible with.",
+          "examples": [
+            [
+              "com.his.cat"
+            ]
+          ]
+        }
+      },
+      "examples": [
+        {
+          "include": [
+            "com.my.tom"
+          ],
+          "exclude": [
+            "com.his.cat"
+          ]
+        }
+      ]
+    },
+    "Effect": {
+      "type": "string",
+      "enum": [
+        "trader",
+        "item",
+        "other"
+      ],
+      "description": "Recognized effects that a mod may have on profile data. Mod managers that support this manifest can use these values to warn users about potential profile incompatibilities and prompt them to enable profile cleaning features in SPT settings."
+    },
+    "Link": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/LinkType"
+        },
+        "name": {
+          "type": "string",
+          "description": "The display name of the link."
+        },
+        "url": {
+          "type": "string",
+          "description": "The URL of the link."
+        }
+      },
+      "examples": [
+        {
+          "type": "code",
+          "url": "https://github.com/example/my-mod"
+        },
+        {
+          "url": "https://example.com/documentation"
+        }
+      ]
+    },
+    "LinkType": {
+      "type": "string",
+      "enum": [
+        "code",
+        "discord",
+        "website",
+        "documentation"
+      ],
+      "description": "Common link types for mod-related resources."
+    }
+  }
+}
