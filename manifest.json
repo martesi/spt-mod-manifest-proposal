@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.spt-mod-manifest.example/manifest.json",
+  "$id": "https://github.com/martesi/spt-mod-manifest-proposal/blob/main/manifest.json",
   "title": "SPT Mod Manifest",
   "description": "Mod manifest proposal for SPT (Single-Player Tarkov). SPT defines the structure of server-side mods, while BepInEx defines the structure of client-side mods. This manifest schema provides a standardized format to describe mod metadata and dependencies, enabling mod managers to properly manage mod installations.",
   "type": "object",
